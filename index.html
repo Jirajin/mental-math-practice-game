@@ -6,12 +6,14 @@
     <title>Math Sync // Neo-Arcade Calculation Engine</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <!-- Google Fonts: Inter, JetBrains Mono & Orbitron -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
     <!-- FontAwesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
 
     <script>
         tailwind.config = {
@@ -163,26 +165,31 @@
 
     <header class="w-full border-b border-white/10 bg-obsidian-card/80 backdrop-blur-md px-4 py-3 sticky top-0 z-20">
         <div class="max-w-6xl mx-auto flex items-center justify-between">
-            <div class="flex items-center gap-3 cursor-pointer" onclick="app.showSetup()">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.app && window.app.showSetup()">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan via-violet to-emerald flex items-center justify-center shadow-neon-cyan">
                     <i class="fa-solid fa-bolt text-obsidian text-xl font-extrabold"></i>
                 </div>
                 <div>
-                    <h1 class="font-display text-lg font-black tracking-wider text-white flex items-center gap-2">
-                        MATH<span class="text-cyan">SYNC</span>
-                        <span class="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-cyan/10 text-cyan border border-cyan/30">NEO-ARCADE</span>
-                    </h1>
-                    <p class="text-xs text-slate-400 font-mono">CALCULATION SPEED ENGINE</p>
+                    <h1 class="font-display font-black text-base sm:text-lg tracking-wider text-white">MATH <span class="text-cyan">SYNC</span></h1>
+                    <p class="text-[10px] font-mono text-slate-400 -mt-1 hidden sm:block">NEO-ARCADE ENGINE</p>
                 </div>
             </div>
 
-            <div class="flex items-center gap-4">
-                <button id="soundToggleBtn" onclick="app.toggleSound()" class="w-10 h-10 rounded-xl glass-tile flex items-center justify-center text-slate-300 hover:text-cyan transition-colors" title="Toggle Audio FX">
+            <div class="flex items-center gap-3 sm:gap-4">
+                <button id="soundToggleBtn" onclick="window.app && window.app.toggleSound()" class="w-10 h-10 rounded-xl glass-tile flex items-center justify-center text-slate-300 hover:text-cyan transition-colors" title="Toggle Audio FX">
                     <i class="fa-solid fa-volume-high text-lg" id="soundIcon"></i>
                 </button>
                 <div class="hidden sm:flex items-center gap-2 font-mono text-xs text-slate-400 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10">
                     <span class="w-2 h-2 rounded-full bg-emerald animate-pulse"></span>
                     <span>READY TO SYNC</span>
+                </div>
+
+                <!-- Google Auth UI Container -->
+                <div id="authContainer">
+                    <button onclick="window.app && window.app.loginWithGoogle()" class="flex items-center gap-2 font-mono text-xs font-bold text-white bg-white/10 hover:bg-cyan/20 border border-white/15 hover:border-cyan/50 px-3 py-2 rounded-xl transition-all shadow-sm active:scale-95">
+                        <i class="fa-brands fa-google text-cyan text-sm"></i>
+                        <span class="hidden sm:inline">SIGN IN</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -214,13 +221,13 @@
                             Session Duration Limit (Minutes)
                         </label>
                         <div class="flex flex-wrap items-center gap-2" id="timePresets">
-                            <button onclick="app.setLimit(3)" class="time-btn px-3 py-2.5 rounded-xl border border-white/10 bg-white/5 font-mono text-sm font-bold hover:border-cyan transition-all" data-time="3">3m</button>
-                            <button onclick="app.setLimit(5)" class="time-btn px-3 py-2.5 rounded-xl border border-cyan bg-cyan/10 font-mono text-sm font-bold text-cyan shadow-neon-cyan transition-all" data-time="5">5m</button>
-                            <button onclick="app.setLimit(10)" class="time-btn px-3 py-2.5 rounded-xl border border-white/10 bg-white/5 font-mono text-sm font-bold hover:border-cyan transition-all" data-time="10">10m</button>
-                            <button onclick="app.setLimit(30)" class="time-btn px-3 py-2.5 rounded-xl border border-white/10 bg-white/5 font-mono text-sm font-bold hover:border-cyan transition-all" data-time="30">30m</button>
+                            <button onclick="window.app && window.app.setLimit(3)" class="time-btn px-3 py-2.5 rounded-xl border border-white/10 bg-white/5 font-mono text-sm font-bold hover:border-cyan transition-all" data-time="3">3m</button>
+                            <button onclick="window.app && window.app.setLimit(5)" class="time-btn px-3 py-2.5 rounded-xl border border-cyan bg-cyan/10 font-mono text-sm font-bold text-cyan shadow-neon-cyan transition-all" data-time="5">5m</button>
+                            <button onclick="window.app && window.app.setLimit(10)" class="time-btn px-3 py-2.5 rounded-xl border border-white/10 bg-white/5 font-mono text-sm font-bold hover:border-cyan transition-all" data-time="10">10m</button>
+                            <button onclick="window.app && window.app.setLimit(30)" class="time-btn px-3 py-2.5 rounded-xl border border-white/10 bg-white/5 font-mono text-sm font-bold hover:border-cyan transition-all" data-time="30">30m</button>
                             
                             <div class="flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-xl px-3 py-2 focus-within:border-cyan transition-all">
-                                <input type="number" id="customMinutesInput" min="1" max="180" placeholder="Custom" oninput="app.setCustomLimit(this.value)" class="w-16 bg-transparent text-sm font-mono font-bold text-white outline-none placeholder-slate-500">
+                                <input type="number" id="customMinutesInput" min="1" max="180" placeholder="Custom" oninput="window.app && window.app.setCustomLimit(this.value)" class="w-16 bg-transparent text-sm font-mono font-bold text-white outline-none placeholder-slate-500">
                                 <span class="text-xs font-mono text-slate-400">min</span>
                             </div>
                         </div>
@@ -236,7 +243,6 @@
                 </div>
             </div>
 
-            <!-- Per-Operator Cards Grid -->
             <div>
                 <h3 class="font-display font-bold text-base text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
                     <i class="fa-solid fa-calculator text-emerald"></i> Operator Rules & Difficulty Controls
@@ -253,7 +259,7 @@
                                 <span class="font-display font-bold text-white">ADDITION</span>
                             </div>
                             <div class="relative inline-block w-11 h-6 align-middle select-none">
-                                <input type="checkbox" id="toggle-add" class="toggle-checkbox absolute opacity-0 w-0 h-0" checked onchange="app.updateConfig('add')">
+                                <input type="checkbox" id="toggle-add" class="toggle-checkbox absolute opacity-0 w-0 h-0" checked onchange="window.app && window.app.updateConfig('add')">
                                 <label for="toggle-add" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-700 cursor-pointer transition-colors duration-200">
                                     <span class="toggle-ball block w-4 h-4 m-1 rounded-full bg-white transition-transform duration-200"></span>
                                 </label>
@@ -266,7 +272,7 @@
                                     <span>1st Num Digits:</span>
                                     <span id="label-add-range1" class="text-emerald font-bold">2 Digits</span>
                                 </div>
-                                <input type="range" id="range-add-1" min="1" max="3" value="2" step="1" oninput="app.updateConfig('add')" class="w-full accent-emerald bg-slate-800 rounded-lg cursor-pointer h-2">
+                                <input type="range" id="range-add-1" min="1" max="3" value="2" step="1" oninput="window.app && window.app.updateConfig('add')" class="w-full accent-emerald bg-slate-800 rounded-lg cursor-pointer h-2">
                             </div>
 
                             <div>
@@ -274,7 +280,7 @@
                                     <span>2nd Num Digits:</span>
                                     <span id="label-add-range2" class="text-emerald font-bold">2 Digits</span>
                                 </div>
-                                <input type="range" id="range-add-2" min="1" max="3" value="2" step="1" oninput="app.updateConfig('add')" class="w-full accent-emerald bg-slate-800 rounded-lg cursor-pointer h-2">
+                                <input type="range" id="range-add-2" min="1" max="3" value="2" step="1" oninput="window.app && window.app.updateConfig('add')" class="w-full accent-emerald bg-slate-800 rounded-lg cursor-pointer h-2">
                             </div>
 
                             <div class="flex items-center justify-between text-xs font-mono bg-white/5 p-2.5 rounded-lg mt-2">
@@ -294,7 +300,7 @@
                                 <span class="font-display font-bold text-white">SUBTRACTION</span>
                             </div>
                             <div class="relative inline-block w-11 h-6 align-middle select-none">
-                                <input type="checkbox" id="toggle-sub" class="toggle-checkbox absolute opacity-0 w-0 h-0" checked onchange="app.updateConfig('sub')">
+                                <input type="checkbox" id="toggle-sub" class="toggle-checkbox absolute opacity-0 w-0 h-0" checked onchange="window.app && window.app.updateConfig('sub')">
                                 <label for="toggle-sub" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-700 cursor-pointer transition-colors duration-200">
                                     <span class="toggle-ball block w-4 h-4 m-1 rounded-full bg-white transition-transform duration-200"></span>
                                 </label>
@@ -307,7 +313,7 @@
                                     <span>1st Num Digits:</span>
                                     <span id="label-sub-range1" class="text-cyan font-bold">2 Digits</span>
                                 </div>
-                                <input type="range" id="range-sub-1" min="1" max="3" value="2" step="1" oninput="app.updateConfig('sub')" class="w-full accent-cyan bg-slate-800 rounded-lg cursor-pointer h-2">
+                                <input type="range" id="range-sub-1" min="1" max="3" value="2" step="1" oninput="window.app && window.app.updateConfig('sub')" class="w-full accent-cyan bg-slate-800 rounded-lg cursor-pointer h-2">
                             </div>
 
                             <div>
@@ -315,7 +321,7 @@
                                     <span>2nd Num Digits:</span>
                                     <span id="label-sub-range2" class="text-cyan font-bold">2 Digits</span>
                                 </div>
-                                <input type="range" id="range-sub-2" min="1" max="3" value="2" step="1" oninput="app.updateConfig('sub')" class="w-full accent-cyan bg-slate-800 rounded-lg cursor-pointer h-2">
+                                <input type="range" id="range-sub-2" min="1" max="3" value="2" step="1" oninput="window.app && window.app.updateConfig('sub')" class="w-full accent-cyan bg-slate-800 rounded-lg cursor-pointer h-2">
                             </div>
 
                             <div class="flex items-center justify-between text-xs font-mono bg-white/5 p-2.5 rounded-lg mt-2">
@@ -335,7 +341,7 @@
                                 <span class="font-display font-bold text-white">MULTIPLICATION</span>
                             </div>
                             <div class="relative inline-block w-11 h-6 align-middle select-none">
-                                <input type="checkbox" id="toggle-mul" class="toggle-checkbox absolute opacity-0 w-0 h-0" checked onchange="app.updateConfig('mul')">
+                                <input type="checkbox" id="toggle-mul" class="toggle-checkbox absolute opacity-0 w-0 h-0" checked onchange="window.app && window.app.updateConfig('mul')">
                                 <label for="toggle-mul" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-700 cursor-pointer transition-colors duration-200">
                                     <span class="toggle-ball block w-4 h-4 m-1 rounded-full bg-white transition-transform duration-200"></span>
                                 </label>
@@ -349,7 +355,7 @@
                                         <span>1st Factor Max:</span>
                                         <span id="label-mul-range1" class="text-violet font-bold">1-12</span>
                                     </div>
-                                    <input type="range" id="range-mul-1" min="1" max="3" value="1" step="1" oninput="app.updateConfig('mul')" class="w-full accent-violet bg-slate-800 rounded-lg cursor-pointer h-2">
+                                    <input type="range" id="range-mul-1" min="1" max="3" value="1" step="1" oninput="window.app && window.app.updateConfig('mul')" class="w-full accent-violet bg-slate-800 rounded-lg cursor-pointer h-2">
                                 </div>
 
                                 <div>
@@ -357,7 +363,7 @@
                                         <span>1st Factor Min:</span>
                                         <span id="label-mul-min1" class="text-violet font-bold">≥ 2</span>
                                     </div>
-                                    <input type="range" id="range-mul-min1" min="2" max="50" value="2" step="1" oninput="app.updateConfig('mul')" class="w-full accent-violet bg-slate-800 rounded-lg cursor-pointer h-2">
+                                    <input type="range" id="range-mul-min1" min="2" max="50" value="2" step="1" oninput="window.app && window.app.updateConfig('mul')" class="w-full accent-violet bg-slate-800 rounded-lg cursor-pointer h-2">
                                 </div>
                             </div>
 
@@ -367,7 +373,7 @@
                                         <span>2nd Factor Max:</span>
                                         <span id="label-mul-range2" class="text-violet font-bold">1-12</span>
                                     </div>
-                                    <input type="range" id="range-mul-2" min="1" max="3" value="1" step="1" oninput="app.updateConfig('mul')" class="w-full accent-violet bg-slate-800 rounded-lg cursor-pointer h-2">
+                                    <input type="range" id="range-mul-2" min="1" max="3" value="1" step="1" oninput="window.app && window.app.updateConfig('mul')" class="w-full accent-violet bg-slate-800 rounded-lg cursor-pointer h-2">
                                 </div>
 
                                 <div>
@@ -375,7 +381,7 @@
                                         <span>2nd Factor Min:</span>
                                         <span id="label-mul-min2" class="text-violet font-bold">≥ 2</span>
                                     </div>
-                                    <input type="range" id="range-mul-min2" min="2" max="30" value="2" step="1" oninput="app.updateConfig('mul')" class="w-full accent-violet bg-slate-800 rounded-lg cursor-pointer h-2">
+                                    <input type="range" id="range-mul-min2" min="2" max="30" value="2" step="1" oninput="window.app && window.app.updateConfig('mul')" class="w-full accent-violet bg-slate-800 rounded-lg cursor-pointer h-2">
                                 </div>
                             </div>
 
@@ -396,7 +402,7 @@
                                 <span class="font-display font-bold text-white">DIVISION</span>
                             </div>
                             <div class="relative inline-block w-11 h-6 align-middle select-none">
-                                <input type="checkbox" id="toggle-div" class="toggle-checkbox absolute opacity-0 w-0 h-0" checked onchange="app.updateConfig('div')">
+                                <input type="checkbox" id="toggle-div" class="toggle-checkbox absolute opacity-0 w-0 h-0" checked onchange="window.app && window.app.updateConfig('div')">
                                 <label for="toggle-div" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-700 cursor-pointer transition-colors duration-200">
                                     <span class="toggle-ball block w-4 h-4 m-1 rounded-full bg-white transition-transform duration-200"></span>
                                 </label>
@@ -410,7 +416,7 @@
                                         <span>Divisor Max:</span>
                                         <span id="label-div-range1" class="text-coral font-bold">1-10</span>
                                     </div>
-                                    <input type="range" id="range-div-1" min="1" max="3" value="1" step="1" oninput="app.updateConfig('div')" class="w-full accent-coral bg-slate-800 rounded-lg cursor-pointer h-2">
+                                    <input type="range" id="range-div-1" min="1" max="3" value="1" step="1" oninput="window.app && window.app.updateConfig('div')" class="w-full accent-coral bg-slate-800 rounded-lg cursor-pointer h-2">
                                 </div>
 
                                 <div>
@@ -418,7 +424,7 @@
                                         <span>Divisor Min:</span>
                                         <span id="label-div-min1" class="text-coral font-bold">≥ 2</span>
                                     </div>
-                                    <input type="range" id="range-div-min1" min="2" max="25" value="2" step="1" oninput="app.updateConfig('div')" class="w-full accent-coral bg-slate-800 rounded-lg cursor-pointer h-2">
+                                    <input type="range" id="range-div-min1" min="2" max="25" value="2" step="1" oninput="window.app && window.app.updateConfig('div')" class="w-full accent-coral bg-slate-800 rounded-lg cursor-pointer h-2">
                                 </div>
                             </div>
 
@@ -428,7 +434,7 @@
                                         <span>Quotient Max:</span>
                                         <span id="label-div-range2" class="text-coral font-bold">1-12</span>
                                     </div>
-                                    <input type="range" id="range-div-2" min="1" max="3" value="1" step="1" oninput="app.updateConfig('div')" class="w-full accent-coral bg-slate-800 rounded-lg cursor-pointer h-2">
+                                    <input type="range" id="range-div-2" min="1" max="3" value="1" step="1" oninput="window.app && window.app.updateConfig('div')" class="w-full accent-coral bg-slate-800 rounded-lg cursor-pointer h-2">
                                 </div>
 
                                 <div>
@@ -436,7 +442,7 @@
                                         <span>Quotient Min:</span>
                                         <span id="label-div-min2" class="text-coral font-bold">≥ 2</span>
                                     </div>
-                                    <input type="range" id="range-div-min2" min="2" max="25" value="2" step="1" oninput="app.updateConfig('div')" class="w-full accent-coral bg-slate-800 rounded-lg cursor-pointer h-2">
+                                    <input type="range" id="range-div-min2" min="2" max="25" value="2" step="1" oninput="window.app && window.app.updateConfig('div')" class="w-full accent-coral bg-slate-800 rounded-lg cursor-pointer h-2">
                                 </div>
                             </div>
 
@@ -451,7 +457,7 @@
 
             <!-- Start Game CTA Button -->
             <div class="pt-2 text-center">
-                <button onclick="app.startGame()" id="startBtn" class="w-full sm:w-auto px-10 py-4 rounded-2xl bg-gradient-to-r from-cyan via-emerald to-violet font-display font-black text-obsidian text-lg tracking-wider hover:opacity-95 transform hover:-translate-y-1 active:translate-y-0 transition-all shadow-neon-cyan flex items-center justify-center gap-3 mx-auto">
+                <button onclick="window.app && window.app.startGame()" id="startBtn" class="w-full sm:w-auto px-10 py-4 rounded-2xl bg-gradient-to-r from-cyan via-emerald to-violet font-display font-black text-obsidian text-lg tracking-wider hover:opacity-95 transform hover:-translate-y-1 active:translate-y-0 transition-all shadow-neon-cyan flex items-center justify-center gap-3 mx-auto">
                     <span>LAUNCH PRACTICE SESSION</span>
                     <i class="fa-solid fa-play"></i>
                 </button>
@@ -515,7 +521,7 @@
 
             <!-- 5 Tactile Option Tiles (3D Arcade Buttons) -->
             <div class="grid grid-cols-1 sm:grid-cols-5 gap-3" id="optionsContainer">
-                <!-- 5 Buttons will be injected here dynamically -->
+                <!-- 5 Buttons injected dynamically -->
             </div>
 
             <!-- Key Shortcuts Hint -->
@@ -554,7 +560,7 @@
                 </div>
             </div>
 
-            <!-- Automated AI Diagnosis Panel (Strengths vs Weaknesses) -->
+            <!-- AI Diagnosis Panel -->
             <div class="glass-panel p-6 space-y-4 border-white/10">
                 <h3 class="font-display font-bold text-lg text-white flex items-center gap-2">
                     <i class="fa-solid fa-brain text-violet"></i> DIAGNOSTIC DIAGRAM
@@ -583,7 +589,7 @@
                 </div>
             </div>
 
-            <!-- Operator Performance Breakdown Grid -->
+            <!-- Operator Metrics Breakdown -->
             <div class="glass-panel p-6 space-y-4">
                 <h3 class="font-display font-bold text-base text-slate-300 uppercase tracking-wider">
                     OPERATOR METRICS BREAKDOWN
@@ -595,10 +601,10 @@
 
             <!-- Actions -->
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-                <button onclick="app.startGame()" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-emerald to-cyan font-display font-bold text-obsidian text-sm tracking-wider hover:opacity-90 shadow-neon-emerald transition-all flex items-center justify-center gap-2">
+                <button onclick="window.app && window.app.startGame()" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-emerald to-cyan font-display font-bold text-obsidian text-sm tracking-wider hover:opacity-90 shadow-neon-emerald transition-all flex items-center justify-center gap-2">
                     <i class="fa-solid fa-rotate-right"></i> REPLAY SESSION
                 </button>
-                <button onclick="app.showSetup()" class="w-full sm:w-auto px-8 py-3.5 rounded-xl glass-tile text-white font-display font-bold text-sm tracking-wider hover:border-cyan transition-all flex items-center justify-center gap-2">
+                <button onclick="window.app && window.app.showSetup()" class="w-full sm:w-auto px-8 py-3.5 rounded-xl glass-tile text-white font-display font-bold text-sm tracking-wider hover:border-cyan transition-all flex items-center justify-center gap-2">
                     <i class="fa-solid fa-sliders"></i> MODIFY CONFIGURATION
                 </button>
             </div>
@@ -611,9 +617,18 @@
     </footer>
 
     <script>
-        /**
-         * Web Audio Synthesizer for 0-latency Arcade Sound FX
-         */
+        // Supabase Client Safe Initialization
+        const SUPABASE_URL = 'https://tkyyuxrijkoqrwtiehgg.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRreXl1eHJpamtvcXJ3dGllaGdnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1NjA5NjAsImV4cCI6MjEwNTEzNjk2MH0.HVqsMVLwFfSbTwXJoHt7TbLYlbXM79Wf6CAryX6VemA';
+        let supabase = null;
+        try {
+            if (window.supabase && typeof window.supabase.createClient === 'function') {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            }
+        } catch (e) {
+            console.warn('Supabase client failed to load:', e);
+        }
+
         class ArcadeAudio {
             constructor() {
                 this.ctx = null;
@@ -629,58 +644,62 @@
 
             playCorrect() {
                 if (this.muted || !this.ctx) return;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(523.25, this.ctx.currentTime); // C5
-                osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.15); // A5
-                gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start();
-                osc.stop(this.ctx.currentTime + 0.15);
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, this.ctx.currentTime); // C5
+                    osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.15); // A5
+                    gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.15);
+                } catch(e){}
             }
 
             playError() {
                 if (this.muted || !this.ctx) return;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(180, this.ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(90, this.ctx.currentTime + 0.25);
-                gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start();
-                osc.stop(this.ctx.currentTime + 0.25);
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(180, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(90, this.ctx.currentTime + 0.25);
+                    gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.25);
+                } catch(e){}
             }
 
             playCombo() {
                 if (this.muted || !this.ctx) return;
-                const notes = [440, 554.37, 659.25, 880]; // A chord
-                notes.forEach((freq, idx) => {
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.04);
-                    gain.gain.setValueAtTime(0.15, this.ctx.currentTime + idx * 0.04);
-                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + idx * 0.04 + 0.2);
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-                    osc.start(this.ctx.currentTime + idx * 0.04);
-                    osc.stop(this.ctx.currentTime + idx * 0.04 + 0.2);
-                });
+                try {
+                    const notes = [440, 554.37, 659.25, 880];
+                    notes.forEach((freq, idx) => {
+                        const osc = this.ctx.createOscillator();
+                        const gain = this.ctx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.04);
+                        gain.gain.setValueAtTime(0.15, this.ctx.currentTime + idx * 0.04);
+                        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + idx * 0.04 + 0.2);
+                        osc.connect(gain);
+                        gain.connect(this.ctx.destination);
+                        osc.start(this.ctx.currentTime + idx * 0.04);
+                        osc.stop(this.ctx.currentTime + idx * 0.04 + 0.2);
+                    });
+                } catch(e){}
             }
         }
 
-        /**
-         * Canvas Particle Engine for dopamine sparks
-         */
         class ParticleEngine {
             constructor(canvasId) {
                 this.canvas = document.getElementById(canvasId);
+                if (!this.canvas) return;
                 this.ctx = this.canvas.getContext('2d');
                 this.particles = [];
                 this.resize();
@@ -689,6 +708,7 @@
             }
 
             resize() {
+                if (!this.canvas) return;
                 this.canvas.width = window.innerWidth;
                 this.canvas.height = window.innerHeight;
             }
@@ -710,12 +730,13 @@
             }
 
             loop() {
+                if (!this.ctx) return;
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 for (let i = this.particles.length - 1; i >= 0; i--) {
                     const p = this.particles[i];
                     p.x += p.vx;
                     p.y += p.vy;
-                    p.vy += 0.15; // gravity
+                    p.vy += 0.15;
                     p.alpha -= p.decay;
 
                     if (p.alpha <= 0) {
@@ -751,22 +772,110 @@
                     }
                 };
 
+                this.state = {
+                    active: false,
+                    score: 0,
+                    streak: 0,
+                    maxStreak: 0,
+                    timeRemaining: 300,
+                    timerInterval: null,
+                    currentQuestion: null,
+                    questionStartTime: 0,
+                    stats: {
+                        totalAsked: 0,
+                        totalCorrect: 0,
+                        totalMistakes: 0,
+                        byOperator: {
+                            add: { asked: 0, correct: 0, totalTime: 0 },
+                            sub: { asked: 0, correct: 0, totalTime: 0 },
+                            mul: { asked: 0, correct: 0, totalTime: 0 },
+                            div: { asked: 0, correct: 0, totalTime: 0 }
+                        }
+                    }
+                };
+
                 this.initKeyboard();
             }
 
             init() {
                 this.particles = new ParticleEngine('particleCanvas');
                 this.updateConfig();
+                this.initAuth();
+            }
+
+            initAuth() {
+                if (!supabase) return;
+
+                supabase.auth.getSession().then((res) => {
+                    const session = res && res.data ? res.data.session : null;
+                    this.updateAuthUI(session?.user || null);
+                }).catch((err) => {
+                    console.warn('Auth session check error:', err);
+                });
+
+                supabase.auth.onAuthStateChange((_event, session) => {
+                    this.updateAuthUI(session?.user || null);
+                });
+            }
+
+            async loginWithGoogle() {
+                if (!supabase) {
+                    alert('Google Sign-In is unavailable without an active Supabase connection.');
+                    return;
+                }
+                try {
+                    const { error } = await supabase.auth.signInWithOAuth({
+                        provider: 'google',
+                        options: { redirectTo: window.location.href }
+                    });
+                    if (error) console.error('Google auth error:', error.message);
+                } catch (err) {
+                    console.error('Login exception:', err);
+                }
+            }
+
+            async logout() {
+                if (!supabase) return;
+                try {
+                    await supabase.auth.signOut();
+                } catch (err) {
+                    console.error('Logout exception:', err);
+                }
+            }
+
+            updateAuthUI(user) {
+                const authContainer = document.getElementById('authContainer');
+                if (!authContainer) return;
+
+                if (user) {
+                    const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || `https://placehold.co/40x40/00F0FF/0D0F12?text=${(user.email || 'U')[0].toUpperCase()}`;
+                    const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
+
+                    authContainer.innerHTML = `
+                        <div class="flex items-center gap-2 bg-white/5 border border-white/10 p-1 pr-2.5 rounded-xl">
+                            <img src="${avatarUrl}" alt="${name}" class="w-7 h-7 rounded-lg object-cover border border-cyan/40" onerror="this.src='https://placehold.co/40x40/00F0FF/0D0F12?text=U'">
+                            <span class="hidden md:inline font-mono text-xs text-slate-200 font-bold max-w-[100px] truncate" title="${name}">${name}</span>
+                            <button onclick="window.app && window.app.logout()" class="ml-1 text-slate-400 hover:text-coral transition-colors p-1" title="Sign Out">
+                                <i class="fa-solid fa-right-from-bracket text-xs"></i>
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    authContainer.innerHTML = `
+                        <button onclick="window.app && window.app.loginWithGoogle()" class="flex items-center gap-2 font-mono text-xs font-bold text-white bg-white/10 hover:bg-cyan/20 border border-white/15 hover:border-cyan/50 px-3 py-2 rounded-xl transition-all shadow-sm active:scale-95">
+                            <i class="fa-brands fa-google text-cyan text-sm"></i>
+                            <span class="hidden sm:inline">SIGN IN</span>
+                        </button>
+                    `;
+                }
             }
 
             toggleSound() {
                 this.audio.init();
                 this.audio.muted = !this.audio.muted;
                 const icon = document.getElementById('soundIcon');
-                if (this.audio.muted) {
-                    icon.className = 'fa-solid fa-volume-xmark text-slate-500';
-                } else {
-                    icon.className = 'fa-solid fa-volume-high text-cyan';
+                if (icon) {
+                    icon.className = this.audio.muted ? 'fa-solid fa-volume-xmark text-slate-500' : 'fa-solid fa-volume-high text-cyan';
                 }
             }
 
@@ -775,7 +884,8 @@
                 if (isNaN(mins) || mins <= 0) return;
                 this.config.timeLimitMinutes = mins;
 
-                document.getElementById('customMinutesInput').value = '';
+                const customInput = document.getElementById('customMinutesInput');
+                if (customInput) customInput.value = '';
 
                 document.querySelectorAll('#timePresets button').forEach(btn => {
                     const matches = parseFloat(btn.getAttribute('data-time')) === mins;
@@ -790,7 +900,6 @@
                 if (isNaN(mins) || mins <= 0) return;
                 this.config.timeLimitMinutes = mins;
 
-                // Unselect preset buttons
                 document.querySelectorAll('#timePresets button').forEach(btn => {
                     btn.className = 'time-btn px-3 py-2.5 rounded-xl border border-white/10 bg-white/5 font-mono text-sm font-bold hover:border-cyan transition-all';
                 });
@@ -805,6 +914,7 @@
                     const toggle = document.getElementById(`toggle-${op}`);
                     const range1El = document.getElementById(`range-${op}-1`);
                     const range2El = document.getElementById(`range-${op}-2`);
+                    if (!toggle || !range1El || !range2El) return;
 
                     const enabled = toggle.checked;
                     const val1 = parseInt(range1El.value);
@@ -814,7 +924,6 @@
                     this.config.operators[op].range1 = val1;
                     this.config.operators[op].range2 = val2;
 
-                    // Update Labels & Min Ranges
                     const range1Label = document.getElementById(`label-${op}-range1`);
                     const range2Label = document.getElementById(`label-${op}-range2`);
                     const weightLabel = document.getElementById(`weight-${op}`);
@@ -831,25 +940,33 @@
                         r2Text = val2 === 1 ? '1 Digit' : val2 === 2 ? '2 Digits' : '3 Digits';
                         wBase = (val1 + val2) * 35 + 50;
                     } else if (op === 'mul') {
-                        const min1Val = parseInt(document.getElementById('range-mul-min1').value);
-                        const min2Val = parseInt(document.getElementById('range-mul-min2').value);
+                        const min1El = document.getElementById('range-mul-min1');
+                        const min2El = document.getElementById('range-mul-min2');
+                        const min1Val = min1El ? parseInt(min1El.value) || 2 : 2;
+                        const min2Val = min2El ? parseInt(min2El.value) || 2 : 2;
                         this.config.operators.mul.min1 = min1Val;
                         this.config.operators.mul.min2 = min2Val;
 
-                        document.getElementById('label-mul-min1').innerText = `≥ ${min1Val}`;
-                        document.getElementById('label-mul-min2').innerText = `≥ ${min2Val}`;
+                        const lblMin1 = document.getElementById('label-mul-min1');
+                        const lblMin2 = document.getElementById('label-mul-min2');
+                        if (lblMin1) lblMin1.innerText = `≥ ${min1Val}`;
+                        if (lblMin2) lblMin2.innerText = `≥ ${min2Val}`;
 
                         r1Text = val1 === 1 ? '1-12' : val1 === 2 ? '1-99' : '1-999';
                         r2Text = val2 === 1 ? '1-12' : val2 === 2 ? '1-50' : '1-99';
                         wBase = (val1 + val2) * 70 + 40 + (min1Val + min2Val) * 4;
                     } else if (op === 'div') {
-                        const min1Val = parseInt(document.getElementById('range-div-min1').value);
-                        const min2Val = parseInt(document.getElementById('range-div-min2').value);
+                        const min1El = document.getElementById('range-div-min1');
+                        const min2El = document.getElementById('range-div-min2');
+                        const min1Val = min1El ? parseInt(min1El.value) || 2 : 2;
+                        const min2Val = min2El ? parseInt(min2El.value) || 2 : 2;
                         this.config.operators.div.min1 = min1Val;
                         this.config.operators.div.min2 = min2Val;
 
-                        document.getElementById('label-div-min1').innerText = `≥ ${min1Val}`;
-                        document.getElementById('label-div-min2').innerText = `≥ ${min2Val}`;
+                        const lblMin1 = document.getElementById('label-div-min1');
+                        const lblMin2 = document.getElementById('label-div-min2');
+                        if (lblMin1) lblMin1.innerText = `≥ ${min1Val}`;
+                        if (lblMin2) lblMin2.innerText = `≥ ${min2Val}`;
 
                         r1Text = val1 === 1 ? '1-10' : val1 === 2 ? '1-20' : '1-35';
                         r2Text = val2 === 1 ? '1-12' : val2 === 2 ? '1-25' : '1-50';
@@ -890,7 +1007,6 @@
             startGame() {
                 this.audio.init();
 
-                // Validate operator selection
                 const enabledOps = Object.keys(this.config.operators).filter(k => this.config.operators[k].enabled);
                 if (enabledOps.length === 0) {
                     document.getElementById('operatorError').classList.remove('hidden');
@@ -899,7 +1015,6 @@
 
                 const totalSeconds = Math.round(this.config.timeLimitMinutes * 60);
 
-                // Reset Game State
                 this.state = {
                     active: true,
                     score: 0,
@@ -922,7 +1037,6 @@
                     }
                 };
 
-                // UI Transitions
                 document.getElementById('setupScreen').classList.add('hidden');
                 document.getElementById('analysisScreen').classList.add('hidden');
                 document.getElementById('gameScreen').classList.remove('hidden');
@@ -945,29 +1059,26 @@
             }
 
             updateHUD() {
-                // Time Text
                 const mins = Math.floor(this.state.timeRemaining / 60);
                 const secs = this.state.timeRemaining % 60;
                 document.getElementById('hudTimer').innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 
-                // Pressure Gauge Bar
                 const totalSeconds = Math.max(1, this.config.timeLimitMinutes * 60);
                 const pct = Math.max(0, (this.state.timeRemaining / totalSeconds) * 100);
                 const gauge = document.getElementById('pressureGauge');
-                gauge.style.width = `${pct}%`;
-
-                if (pct < 25) {
-                    gauge.className = 'h-full bg-coral rounded-full transition-all duration-300 shadow-neon-coral animate-pulse';
-                } else if (pct < 50) {
-                    gauge.className = 'h-full bg-violet rounded-full transition-all duration-300 shadow-neon-violet';
-                } else {
-                    gauge.className = 'h-full bg-gradient-to-r from-cyan to-emerald rounded-full transition-all duration-300 shadow-neon-cyan';
+                if (gauge) {
+                    gauge.style.width = `${pct}%`;
+                    if (pct < 25) {
+                        gauge.className = 'h-full bg-coral rounded-full transition-all duration-300 shadow-neon-coral animate-pulse';
+                    } else if (pct < 50) {
+                        gauge.className = 'h-full bg-violet rounded-full transition-all duration-300 shadow-neon-violet';
+                    } else {
+                        gauge.className = 'h-full bg-gradient-to-r from-cyan to-emerald rounded-full transition-all duration-300 shadow-neon-cyan';
+                    }
                 }
 
-                // Score Display
                 document.getElementById('hudScore').innerText = this.state.score.toLocaleString();
 
-                // Streak Multipliers
                 const badge = document.getElementById('hudStreakBadge');
                 const tier = document.getElementById('hudStreakTier');
                 const streakBar = document.getElementById('streakBar');
@@ -990,12 +1101,16 @@
                     colorClass = 'bg-emerald/30 border-emerald text-emerald shadow-neon-emerald';
                 }
 
-                badge.className = `font-display font-extrabold text-xs px-2.5 py-1 rounded-full border ${colorClass} transition-all`;
-                badge.innerText = `COMBO x${multiplier}`;
-                tier.innerText = label;
+                if (badge) {
+                    badge.className = `font-display font-extrabold text-xs px-2.5 py-1 rounded-full border ${colorClass} transition-all`;
+                    badge.innerText = `COMBO x${multiplier}`;
+                }
+                if (tier) tier.innerText = label;
 
-                const streakPct = Math.min(100, (this.state.streak / 15) * 100);
-                streakBar.style.width = `${streakPct}%`;
+                if (streakBar) {
+                    const streakPct = Math.min(100, (this.state.streak / 15) * 100);
+                    streakBar.style.width = `${streakPct}%`;
+                }
             }
 
             nextQuestion() {
@@ -1067,13 +1182,12 @@
                     label = 'DIVISION';
                     const minDiv = this.config.operators.div.min1 || 2;
                     const minQuot = this.config.operators.div.min2 || 2;
-                    num2 = getDivisorRange(r1, minDiv); // Divisor
-                    const quotient = getQuotientRange(r2, minQuot); // Quotient
+                    num2 = getDivisorRange(r1, minDiv);
+                    const quotient = getQuotientRange(r2, minQuot);
                     answer = quotient;
-                    num1 = num2 * quotient; // Dividend
+                    num1 = num2 * quotient;
                 }
 
-                // Generate 4 Smart Distractor Answers (5 Total Options)
                 const optionsSet = new Set();
                 optionsSet.add(answer);
 
@@ -1100,11 +1214,9 @@
 
                 this.state.questionStartTime = Date.now();
 
-                // Update UI Card
                 document.getElementById('questionOperatorLabel').innerText = `OPERATOR: ${label}`;
                 document.getElementById('equationText').innerText = `${num1} ${symbol} ${num2} = ?`;
 
-                // Render 5 Tactical Choice Buttons
                 const container = document.getElementById('optionsContainer');
                 container.innerHTML = '';
 
@@ -1120,7 +1232,6 @@
                 });
             }
 
-            // Keyboard Shortcuts Handler
             initKeyboard() {
                 window.addEventListener('keydown', (e) => {
                     if (!this.state.active || !this.state.currentQuestion) return;
@@ -1141,7 +1252,6 @@
                 const timeTaken = (Date.now() - this.state.questionStartTime) / 1000;
                 const isCorrect = chosenValue === q.answer;
 
-                // Track stats
                 this.state.stats.totalAsked++;
                 this.state.stats.byOperator[q.opKey].asked++;
                 this.state.stats.byOperator[q.opKey].totalTime += timeTaken;
@@ -1154,7 +1264,6 @@
                         this.state.maxStreak = this.state.streak;
                     }
 
-                    // Calculate Points formula: Base Weight * Combo Multiplier + Speed Bonus
                     let mult = 1;
                     if (this.state.streak >= 15) mult = 5;
                     else if (this.state.streak >= 10) mult = 3;
@@ -1164,38 +1273,37 @@
                     const gainedPoints = (q.weight * mult) + speedBonus;
                     this.state.score += gainedPoints;
 
-                    // Audio & Particles
                     if (this.state.streak % 5 === 0 && this.state.streak > 0) {
                         this.audio.playCombo();
                     } else {
                         this.audio.playCorrect();
                     }
 
-                    // Particles on click or center screen
                     const clickX = event ? event.clientX : window.innerWidth / 2;
                     const clickY = event ? event.clientY : window.innerHeight / 2;
-                    this.particles.spawn(clickX, clickY, '#00FF9D', 30);
+                    if (this.particles) this.particles.spawn(clickX, clickY, '#00FF9D', 30);
 
-                    // Floating Score Popup
                     this.spawnPopup(`+${gainedPoints}${speedBonus > 0 ? '⚡' : ''}`, clickX, clickY, '#00FF9D');
 
                 } else {
-                    // Mistake Penalty
                     this.state.stats.totalMistakes++;
-                    this.state.streak = 0; // Reset streak
+                    this.state.streak = 0;
                     const penalty = 50;
                     this.state.score = Math.max(0, this.state.score - penalty);
 
                     this.audio.playError();
 
-                    // Screen Flash Shake FX
                     const card = document.getElementById('equationCard');
-                    card.classList.add('animate-shake');
-                    setTimeout(() => card.classList.remove('animate-shake'), 400);
+                    if (card) {
+                        card.classList.add('animate-shake');
+                        setTimeout(() => card.classList.remove('animate-shake'), 400);
+                    }
 
                     const overlay = document.getElementById('damageOverlay');
-                    overlay.classList.add('damage-flash');
-                    setTimeout(() => overlay.classList.remove('damage-flash'), 350);
+                    if (overlay) {
+                        overlay.classList.add('damage-flash');
+                        setTimeout(() => overlay.classList.remove('damage-flash'), 350);
+                    }
 
                     const clickX = event ? event.clientX : window.innerWidth / 2;
                     const clickY = event ? event.clientY : window.innerHeight / 2;
@@ -1208,6 +1316,7 @@
 
             spawnPopup(text, x, y, color) {
                 const container = document.getElementById('popupContainer');
+                if (!container) return;
                 const pop = document.createElement('div');
                 pop.className = 'floating-popup text-2xl drop-shadow-lg';
                 pop.style.left = `${x - 20}px`;
@@ -1222,7 +1331,6 @@
                 clearInterval(this.state.timerInterval);
                 this.state.active = false;
 
-                // UI Screen Switch
                 document.getElementById('gameScreen').classList.add('hidden');
                 document.getElementById('analysisScreen').classList.remove('hidden');
 
@@ -1234,13 +1342,11 @@
                 Object.values(stats.byOperator).forEach(o => totalTimeAll += o.totalTime);
                 const avgSpeed = totalAsked > 0 ? (totalTimeAll / totalAsked).toFixed(2) : '0.0';
 
-                // Display Core Summary
                 document.getElementById('finalScore').innerText = this.state.score.toLocaleString();
                 document.getElementById('finalAccuracy').innerText = `${accuracy}%`;
                 document.getElementById('finalMaxStreak').innerText = this.state.maxStreak;
                 document.getElementById('finalAvgSpeed').innerText = `${avgSpeed}s`;
 
-                // Render Operator Metric Breakdown Grid
                 const grid = document.getElementById('operatorBreakdownGrid');
                 grid.innerHTML = '';
 
@@ -1257,7 +1363,6 @@
                         const opAvgTime = (data.totalTime / data.asked).toFixed(2);
                         const color = opColors[op];
 
-                        // Grid Card
                         const card = document.createElement('div');
                         card.className = `glass-panel p-4 border-${color}/20 space-y-2`;
                         card.innerHTML = `
@@ -1275,7 +1380,6 @@
                         `;
                         grid.appendChild(card);
 
-                        // Diagnosis logic
                         if (opAcc >= 85 && parseFloat(opAvgTime) < 2.0) {
                             strengths.push(`Exceptional speed & precision in ${opLabels[op]} (${opAcc}% acc, ${opAvgTime}s avg)`);
                         } else if (opAcc < 70) {
@@ -1293,20 +1397,40 @@
                     weaknesses.push("Flawless execution! Increase digit range settings for higher point weight challenges.");
                 }
 
-                // Render Strength & Weakness List
                 const sList = document.getElementById('strengthList');
                 const wList = document.getElementById('weaknessList');
 
-                sList.innerHTML = strengths.map(s => `<li>${s}</li>`).join('');
-                wList.innerHTML = weaknesses.map(w => `<li>${w}</li>`).join('');
+                if (sList) sList.innerHTML = strengths.map(s => `<li>${s}</li>`).join('');
+                if (wList) wList.innerHTML = weaknesses.map(w => `<li>${w}</li>`).join('');
             }
         }
 
-        let app;
-        window.onload = function() {
-            app = new MathSyncApp();
-            app.init();
-        };
+        var app = null;
+
+        function initMathSyncApp() {
+            try {
+                if (!window.app) {
+                    app = new MathSyncApp();
+                    window.app = app;
+                    app.init();
+                }
+            } catch (err) {
+                console.warn('MathSync app initialization exception:', err);
+            }
+        }
+
+        // Global error guard to catch and prevent cross-origin script error noise
+        window.addEventListener('error', function (e) {
+            if (e && e.message === 'Script error.') {
+                e.preventDefault();
+            }
+        });
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initMathSyncApp);
+        } else {
+            initMathSyncApp();
+        }
     </script>
 </body>
 </html>
