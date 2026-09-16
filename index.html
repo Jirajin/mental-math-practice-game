@@ -617,7 +617,6 @@
     </footer>
 
     <script>
-        // Supabase Client Safe Initialization
         const SUPABASE_URL = 'https://tkyyuxrijkoqrwtiehgg.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRreXl1eHJpamtvcXJ3dGllaGdnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1NjA5NjAsImV4cCI6MjEwNTEzNjk2MH0.HVqsMVLwFfSbTwXJoHt7TbLYlbXM79Wf6CAryX6VemA';
         let supabaseClient = null;
@@ -804,8 +803,9 @@
             }
 
             initAuth() {
-                if (!supabase) return;
+                if (!supabaseClient) return;
 
+                // Initial Session Retrieval
                 supabaseClient.auth.getSession().then((res) => {
                     const session = res && res.data ? res.data.session : null;
                     this.updateAuthUI(session?.user || null);
@@ -813,13 +813,14 @@
                     console.warn('Auth session check error:', err);
                 });
 
+                // Real-time Authentication State Listener
                 supabaseClient.auth.onAuthStateChange((_event, session) => {
                     this.updateAuthUI(session?.user || null);
                 });
             }
 
             async loginWithGoogle() {
-                if (!supabase) {
+                if (!supabaseClient) {
                     alert('Google Sign-In is unavailable without an active Supabase connection.');
                     return;
                 }
@@ -835,9 +836,14 @@
             }
 
             async logout() {
-                if (!supabase) return;
+                if (!supabaseClient) return;
                 try {
-                    await supabaseClient.auth.signOut();
+                    const { error } = await supabaseClient.auth.signOut();
+                    if (error) {
+                        console.error('Logout error:', error.message);
+                    } else {
+                        this.updateAuthUI(null);
+                    }
                 } catch (err) {
                     console.error('Logout exception:', err);
                 }
@@ -848,15 +854,22 @@
                 if (!authContainer) return;
 
                 if (user) {
+                    // Extract avatar picture and display name from user metadata or fallback
                     const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || `https://placehold.co/40x40/00F0FF/0D0F12?text=${(user.email || 'U')[0].toUpperCase()}`;
-                    const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
+                    const displayName = user.user_metadata?.full_name || user.user_metadata?.name || (user.email ? user.email.split('@')[0] : 'Operator');
 
                     authContainer.innerHTML = `
-                        <div class="flex items-center gap-2 bg-white/5 border border-white/10 p-1 pr-2.5 rounded-xl">
-                            <img src="${avatarUrl}" alt="${name}" class="w-7 h-7 rounded-lg object-cover border border-cyan/40" onerror="this.src='https://placehold.co/40x40/00F0FF/0D0F12?text=U'">
-                            <span class="hidden md:inline font-mono text-xs text-slate-200 font-bold max-w-[100px] truncate" title="${name}">${name}</span>
-                            <button onclick="window.app && window.app.logout()" class="ml-1 text-slate-400 hover:text-coral transition-colors p-1" title="Sign Out">
+                        <div class="flex items-center gap-2.5 bg-white/5 border border-cyan/30 px-2.5 py-1.5 rounded-xl backdrop-blur-md shadow-neon-cyan/20">
+                            <img src="${avatarUrl}" alt="${displayName}" class="w-7 h-7 rounded-lg object-cover border border-cyan/60 shadow-sm" onerror="this.src='https://placehold.co/40x40/00F0FF/0D0F12?text=U'">
+                            <div class="hidden sm:flex flex-col text-left">
+                                <span class="font-mono text-xs text-slate-100 font-bold max-w-[120px] truncate leading-tight" title="${displayName}">${displayName}</span>
+                                <span class="text-[9px] font-mono text-emerald tracking-wider flex items-center gap-1 leading-tight">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald animate-pulse"></span> ONLINE
+                                </span>
+                            </div>
+                            <button onclick="window.app && window.app.logout()" class="ml-1 flex items-center gap-1 px-2 py-1 rounded-lg bg-coral/10 hover:bg-coral/20 border border-coral/30 hover:border-coral/60 text-coral font-mono text-[11px] font-bold transition-all active:scale-95" title="Sign Out">
                                 <i class="fa-solid fa-right-from-bracket text-xs"></i>
+                                <span class="hidden md:inline">Sign Out</span>
                             </button>
                         </div>
                     `;
