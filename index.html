@@ -625,9 +625,8 @@
           if (window.supabase && typeof window.supabase.createClient === 'function') {
             supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
           }
-        }
         } catch (e) {
-            console.warn('Supabase client failed to load:', e);
+          console.warn('Supabase client failed to load:', e);
         }
 
         class ArcadeAudio {
