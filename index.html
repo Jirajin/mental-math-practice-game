@@ -620,11 +620,12 @@
         // Supabase Client Safe Initialization
         const SUPABASE_URL = 'https://tkyyuxrijkoqrwtiehgg.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRreXl1eHJpamtvcXJ3dGllaGdnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1NjA5NjAsImV4cCI6MjEwNTEzNjk2MH0.HVqsMVLwFfSbTwXJoHt7TbLYlbXM79Wf6CAryX6VemA';
-        let supabase = null;
+        let supabaseClient = null;
         try {
-            if (window.supabase && typeof window.supabase.createClient === 'function') {
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            }
+          if (window.supabase && typeof window.supabase.createClient === 'function') {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+          }
+        }
         } catch (e) {
             console.warn('Supabase client failed to load:', e);
         }
@@ -806,14 +807,14 @@
             initAuth() {
                 if (!supabase) return;
 
-                supabase.auth.getSession().then((res) => {
+                supabaseClient.auth.getSession().then((res) => {
                     const session = res && res.data ? res.data.session : null;
                     this.updateAuthUI(session?.user || null);
                 }).catch((err) => {
                     console.warn('Auth session check error:', err);
                 });
 
-                supabase.auth.onAuthStateChange((_event, session) => {
+                supabaseClient.auth.onAuthStateChange((_event, session) => {
                     this.updateAuthUI(session?.user || null);
                 });
             }
@@ -824,7 +825,7 @@
                     return;
                 }
                 try {
-                    const { error } = await supabase.auth.signInWithOAuth({
+                    const { error } = await supabaseClient.auth.signInWithOAuth({
                         provider: 'google',
                         options: { redirectTo: window.location.href }
                     });
@@ -837,7 +838,7 @@
             async logout() {
                 if (!supabase) return;
                 try {
-                    await supabase.auth.signOut();
+                    await supabaseClient.auth.signOut();
                 } catch (err) {
                     console.error('Logout exception:', err);
                 }
